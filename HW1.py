@@ -1,6 +1,6 @@
-import os
+from os import rename, makedirs, listdir, rmdir
 from pathlib import Path
-import shutil
+from shutil import move, unpack_archive
 import sys
 
 
@@ -19,7 +19,7 @@ def check_rename_dir(p):
 
             name = normalize(object)
             new_fd = str(p) + '/' + name
-            os.rename(object, new_fd)
+            rename(object, new_fd)
             check_rename_dir(Path(new_fd))
 
     
@@ -30,22 +30,22 @@ def check_file(obj_suf, object):
     
 
     if obj_suf.lower() in ('.jpeg', '.png', '.jpg', '.svg', '.tif'):
-        main.images.append(object)
+        images.append(object)
         
     elif obj_suf.lower() in ('.avi', '.mp4', '.mov', '.mkv', '.vob'):
-        main.videos.append(object)
+        videos.append(object)
 
     elif obj_suf.lower() in ('.doc', '.docx', '.txt', '.pdf', '.xlsx', '.pptx', '.json'):
-        main.docs.append(object)
+        docs.append(object)
 
     elif obj_suf.lower() in ('.mp3', '.ogg', '.wav', '.amr'):
-        main.audio.append(object)
+        audio.append(object)
 
     elif obj_suf.lower() in ('.zip', '.gztar', '.bztar', '.xztar', '.tar'):
-        main.archives.append(object)
+        archives.append(object)
 
     else:
-        main.other.append(object)
+        other.append(object)
 
     
 
@@ -94,60 +94,56 @@ def move_files(images, videos, docs, audio, archives, other, p):
     fd_path_archives = str(p) + '/' + 'archives'
     fd_path_other = str(p) + '/' + 'other'
 
-    os.makedirs(fd_path_images, exist_ok=True)
-    os.makedirs(fd_path_videos, exist_ok=True)
-    os.makedirs(fd_path_docs, exist_ok=True)
-    os.makedirs(fd_path_audio, exist_ok=True)
-    os.makedirs(fd_path_archives, exist_ok=True)
-    os.makedirs(fd_path_other, exist_ok=True)
+    makedirs(fd_path_images, exist_ok=True)
+    makedirs(fd_path_videos, exist_ok=True)
+    makedirs(fd_path_docs, exist_ok=True)
+    makedirs(fd_path_audio, exist_ok=True)
+    makedirs(fd_path_archives, exist_ok=True)
+    makedirs(fd_path_other, exist_ok=True)
     
 
     for video in videos:
 
         trans_name = normalize(video)
         new_path = str(fd_path_videos) + '/' + str(trans_name)
-        shutil.move(video, new_path)
+        move(video, new_path)
 
     for image in images:
 
         trans_name = normalize(image)
         new_path = str(fd_path_images) + '/' + str(trans_name)
-        shutil.move(image, new_path)
+        move(image, new_path)
 
     for doc in docs:
 
         trans_name = normalize(doc)
         new_path = str(fd_path_docs) + '/' + str(trans_name)
-        shutil.move(doc, new_path)
+        move(doc, new_path)
 
     for track in audio:
 
         trans_name = normalize(track)
         new_path = str(fd_path_audio) + '/' + str(trans_name)
-        shutil.move(track, new_path)
+        move(track, new_path)
 
 
     for archive in archives:
 
         trans_name = normalize(archive)
         new_path = str(fd_path_archives) + '/' + str(trans_name)
-        shutil.unpack_archive(archive, new_path)
+        unpack_archive(archive, new_path)
 
     for file in other:
 
         trans_name = normalize(file)
         new_path = str(fd_path_other) + '/' + str(trans_name)
-        shutil.move(file, new_path)
-
-
+        move(file, new_path)
 
 def main():
          
     arg = sys.argv[1]
-
     p = Path(arg)
-    images, videos, docs, audio, archives, other = [], [], [], [], [], []
-
+    
     check_rename_dir(p)
     move_files(images, videos, docs, audio, archives, other, p)
     remove_empty_dirs(p)
@@ -160,15 +156,22 @@ def remove_empty_dirs(p):
 
         if object.is_dir():
                 
-            empty = os.listdir(object)
+            empty = listdir(object)
                 
             if (not empty and object.name != 'images' and object.name != 'videos' and object.name != 'documents' and 
-                object.name != 'audio' and object.name != 'archives'):
+                object.name != 'audio' and object.name != 'archives' and object.name != 'other'):
 
-                os.rmdir(object)
+                rmdir(object)
 
             else:
                 remove_empty_dirs(object)
+
+                
+
+
+images, videos, docs, audio, archives, other = [], [], [], [], [], []
+
+
 
 if __name__ == "__main__":
     main()
