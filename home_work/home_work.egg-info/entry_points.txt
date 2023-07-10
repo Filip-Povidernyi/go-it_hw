@@ -1,0 +1,2 @@
+[console_scripts]
+homework = home_work.HW1:main

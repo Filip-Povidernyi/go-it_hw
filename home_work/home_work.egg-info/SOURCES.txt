@@ -1,0 +1,8 @@
+setup.py
+home_work/HW1.py
+home_work/__init__.py
+home_work.egg-info/PKG-INFO
+home_work.egg-info/SOURCES.txt
+home_work.egg-info/dependency_links.txt
+home_work.egg-info/entry_points.txt
+home_work.egg-info/top_level.txt
